@@ -10,15 +10,13 @@
 #define _WIN32_WINNT 0x0A00
 #define WIN32_LEAN_AND_MEAN
 
-#define BS   0x08
-#define CR   0x0D
-#define SP   0x20
-#define QUO  0x27
-#define DQUO 0x22
+#define BS 0x08
+#define CR 0x0D
+#define SP 0x20
 
 using namespace std::literals::chrono_literals;
 
-static unsigned int cwWidth  = 120;
+static unsigned int cwWidth = 120;
 static unsigned int cwHeight = 40;
 static unsigned int nMaxSize = cwWidth * cwHeight;
 
@@ -36,18 +34,18 @@ int main()
 	RefreshDisplay(ConsoleDisplay);
 
 	HANDLE ConsoleOutput = ECH(GetStdHandle(STD_OUTPUT_HANDLE));
-	HANDLE ConsoleInput  = ECH(GetStdHandle(STD_INPUT_HANDLE));
+	HANDLE ConsoleInput = ECH(GetStdHandle(STD_INPUT_HANDLE));
 
 	CONSOLE_SCREEN_BUFFER_INFO csbInfo;
 	GetConsoleScreenBufferInfo(ConsoleOutput, &csbInfo);
-	short cwWidth  = csbInfo.srWindow.Right - csbInfo.srWindow.Left + 1;
+	short cwWidth = csbInfo.srWindow.Right - csbInfo.srWindow.Left + 1;
 	short cwHeight = csbInfo.srWindow.Bottom - csbInfo.srWindow.Top + 1;
-	short sbWidth  = csbInfo.dwSize.X;
+	short sbWidth = csbInfo.dwSize.X;
 	short sbHeight = csbInfo.dwSize.Y;
 	SetConsoleScreenBufferSize(ConsoleOutput, { sbWidth, cwHeight });
 
 	CONSOLE_CURSOR_INFO csrInfo;
-	csrInfo.dwSize   = 1;
+	csrInfo.dwSize = 1;
 	csrInfo.bVisible = FALSE;
 	
 	SetConsoleCursorInfo(ConsoleOutput, &csrInfo);
@@ -56,83 +54,83 @@ int main()
 
 	DWORD dwBytesWritten = 0;
 
-	std::array<std::wstring, 6> O_LightSymbols = { L"┌", L"└", L"┐", L"┘", L"─", L"│" };
-	std::array<std::wstring, 6> O_HeavySymbols = { L"┏", L"┗", L"┓", L"┛", L"━", L"┃" };
-	std::array<std::wstring, 4> I_LightSymbols = { L"├", L"┤", L"┬", L"┴"             };
-	std::array<std::wstring, 4> I_HeavySymbols = { L"┣", L"┫", L"┳", L"┻"             };
-	std::array<std::wstring, 2> CR_Symbols     = { L"┼", L"╋"                         };
+	std::array<int, 6> exLightSymbolsArray = { 0x250C, 0x2514, 0x2510, 0x2518, 0x2500, 0x2502 };
+	std::array<int, 6> exHeavySymbolsArray = { 0x250F, 0x2513, 0x2511, 0x251B, 0x2501, 0x2503 };
+	std::array<int, 4> inLightSymbolsArray = { 0x251C, 0x2524, 0x252C, 0x2534 };
+	std::array<int, 4> inHeavySymbolsArray = { 0x2520, 0x252F, 0x2530, 0x253B };
+	std::array<int, 2> crSymbolsArray = { 0x253C, 0x254B };
 
-	WriteToDisplayBuffer(ConsoleDisplay, 0, 0, O_HeavySymbols[0], O_HeavySymbols[0].size() + 1);
+	WriteToDisplayBuffer(ConsoleDisplay, 0, 0, static_cast<wchar_t>(exHeavySymbolsArray[0]), static_cast<wchar_t>(exHeavySymbolsArray[0]).size() + 1);
 	for (int xt = 1; xt < cwWidth - 2; xt++)
 	{
-		WriteToDisplayBuffer(ConsoleDisplay, xt, 0, O_HeavySymbols[4], O_HeavySymbols[4].size() + 1);
+		WriteToDisplayBuffer(ConsoleDisplay, xt, 0, static_cast<wchar_t>(exHeavySymbolsArray[4]), static_cast<wchar_t>(exHeavySymbolsArray[4]).size() + 1);
 	}
-	WriteToDisplayBuffer(ConsoleDisplay, cwWidth - 2, 0, O_HeavySymbols[2], O_HeavySymbols[2].size() + 1);
+	WriteToDisplayBuffer(ConsoleDisplay, cwWidth - 2, 0, exHeavySymbolsArray[2], exHeavySymbolsArray[2].size() + 1);
 	for (int yl = 1; yl < cwHeight - 1; yl++)
 	{
-		WriteToDisplayBuffer(ConsoleDisplay, 0, yl, O_HeavySymbols[5], O_HeavySymbols[5].size() + 1);
+		WriteToDisplayBuffer(ConsoleDisplay, 0, yl, static_cast<wchar_t>(exHeavySymbolsArray[5]), static_cast<wchar_t>(exHeavySymbolsArray[5]).size() + 1);
 	}
-	WriteToDisplayBuffer(ConsoleDisplay, 0, cwHeight - 1, O_HeavySymbols[1], O_HeavySymbols[1].size() + 1);
+	WriteToDisplayBuffer(ConsoleDisplay, 0, cwHeight - 1, static_cast<wchar_t>(exHeavySymbolsArray[1]), static_cast<wchar_t>(exHeavySymbolsArray[1]).size() + 1);
 	for (int xb = 1; xb < cwWidth - 2; xb++)
 	{
-		WriteToDisplayBuffer(ConsoleDisplay, xb, cwHeight - 1, O_HeavySymbols[4], O_HeavySymbols[4].size() + 1);
+		WriteToDisplayBuffer(ConsoleDisplay, xb, cwHeight - 1, static_cast<wchar_t>(exHeavySymbolsArray[4]), static_cast<wchar_t>(exHeavySymbolsArray[4]).size() + 1);
 	}
-	WriteToDisplayBuffer(ConsoleDisplay, cwWidth - 2, cwHeight - 1, O_HeavySymbols[3], O_HeavySymbols[3].size() + 1);
+	WriteToDisplayBuffer(ConsoleDisplay, cwWidth - 2, cwHeight - 1, static_cast<wchar_t>(exHeavySymbolsArray[3]), static_cast<wchar_t>(exHeavySymbolsArray[3]).size() + 1);
 	for (int yr = 1; yr < cwHeight - 1; yr++)
 	{
-		WriteToDisplayBuffer(ConsoleDisplay, cwWidth - 2, yr, O_HeavySymbols[5], O_HeavySymbols[5].size() + 1);
+		WriteToDisplayBuffer(ConsoleDisplay, cwWidth - 2, yr, static_cast<wchar_t>(exHeavySymbolsArray[5]), static_cast<wchar_t>(exHeavySymbolsArray[5]).size() + 1);
 	}
-	WriteToDisplayBuffer(ConsoleDisplay, 0, cwHeight - 3, I_HeavySymbols[0], I_HeavySymbols[0].size() + 1);
+	WriteToDisplayBuffer(ConsoleDisplay, 0, cwHeight - 3, static_cast<wchar_t>(inHeavySymbolsArray[0]), static_cast<wchar_t>(inHeavySymbolsArray[0]).size() + 1);
 	for (int xb = 1; xb < cwWidth - 2; xb++)
 	{
-		WriteToDisplayBuffer(ConsoleDisplay, xb, cwHeight - 3, O_HeavySymbols[4], O_HeavySymbols[4].size() + 1);
+		WriteToDisplayBuffer(ConsoleDisplay, xb, cwHeight - 3, static_cast<wchar_t>(exHeavySymbolsArray[4]), static_cast<wchar_t>(exHeavySymbolsArray[4]).size() + 1);
 	}
-	WriteToDisplayBuffer(ConsoleDisplay, cwWidth - 2, cwHeight - 3, I_HeavySymbols[1], I_HeavySymbols[1].size() + 1);
+	WriteToDisplayBuffer(ConsoleDisplay, cwWidth - 2, cwHeight - 3, static_cast<wchar_t>(inHeavySymbolsArray[1]), static_cast<wchar_t>(inHeavySymbolsArray[1]).size() + 1);
 	RenderDisplay(ConsoleOutput, ConsoleDisplay, &dwBytesWritten);
 
-	signed char c;
-	std::stringstream ssInputData;
-	bool ControlBlock = true;
-	unsigned int OutputY = 1;
-	unsigned int OutputX = 2;
+	signed char inputChar;
+	std::stringstream inputDataStream;
+	bool controlBlock = true;
+	unsigned int outputY = 1;
+	unsigned int outputX = 2;
 
 	for (;;)
 	{
-		std::thread InputHandler([&]() {
-			while (ControlBlock == true)
+		std::thread inputHandlerThread([&]() {
+			while (controlBlock == true)
 			{
-				c = _getch();
-				if ((int)c == (int)CR)
+				inputChar = _getch();
+				if ((int)inputChar == (int)CR)
 				{
-					ControlBlock = false;
+					controlBlock = false;
 					break;
 				}
-				if ((int)c == (int)BS)
+				if ((int)inputChar == (int)BS)
 				{
-					std::string s = ssInputData.str();
-					s.erase(s.size() - 1, s.size());
-					ssInputData.str(std::string());
-					ssInputData << s;
+					std::string inputDataString = inputDataStream.str();
+					inputDataString.erase(inputDataString.size() - 1, inputDataString.size());
+					inputDataStream.str(std::string());
+					inputDataStream << inputDataString;
 				}
-				ssInputData << c;
-				wchar_t wchInputChar = (wchar_t)c;
-				if (OutputX < (cwWidth - 3))
+				inputDataStream << inputChar;
+				wchar_t wchInputChar = (wchar_t)inputChar;
+				if (outputX < (cwWidth - 3))
 				{
-					WriteToDisplayBuffer(ConsoleDisplay, OutputX, cwHeight - 2, wchInputChar);
+					WriteToDisplayBuffer(ConsoleDisplay, outputX, cwHeight - 2, wchInputChar);
 					RenderDisplay(ConsoleOutput, ConsoleDisplay, &dwBytesWritten);
-					OutputX++;
+					outputX++;
 				}
 				else
 				{
-					OutputX = 2;
+					outputX = 2;
 					ClearInputDisplay(ConsoleOutput, ConsoleDisplay, &dwBytesWritten);
 				}
 			}
 			});
 
-		InputHandler.join();
-		ssInputData.str(std::string());
-		ControlBlock = true;
+		inputHandlerThread.join();
+		inputDataStream.str(std::string());
+		controlBlock = true;
 	}
 
 	ExitProcess(EXIT_SUCCESS);
@@ -173,10 +171,10 @@ void RenderDisplay(HANDLE consoleOutputHandle, wchar_t* displayBuffer, LPDWORD d
 
 void ClearOutputDisplay(HANDLE consoleOutputHandle, wchar_t* displayBuffer, LPDWORD dwBytesWritten)
 {
-	std::wstring Empty = L"                                                                                                                   ";
+	std::wstring emptyInlineString(115, L' ');
 	for (int v = 1; v < 27; v++)
 	{
-		WriteToDisplayBuffer(displayBuffer, 1, v, Empty, Empty.size() + 1);
+		WriteToDisplayBuffer(displayBuffer, 1, v, emptyInlineString, emptyInlineString.size() + 1);
 	}
 	RenderDisplay(consoleOutputHandle, displayBuffer, dwBytesWritten);
 }
